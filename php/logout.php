@@ -1,5 +1,6 @@
 <?php
 session_start();
-session_destroy();
-header("Location: login.php");
+unset($_SESSION['user']);  // Remove the logged-in user data from the session
+header("Location: login.php"); // Redirect to login page
 exit();
+?>
