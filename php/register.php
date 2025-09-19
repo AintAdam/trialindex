@@ -1,10 +1,6 @@
 <?php
 session_start();
-
-// Initialize users array in session if not exists
-if (!isset($_SESSION["users"])) {
-    $_SESSION["users"] = [];
-}
+require_once('functions.php');
 
 $error = "";
 $success = "";
@@ -15,7 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = trim($_POST["password"]);
     $confirm = trim($_POST["confirm"]);
 
-    // Validation
     if (empty($name) || empty($email) || empty($password) || empty($confirm)) {
         $error = "All fields are required!";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -25,41 +20,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($password !== $confirm) {
         $error = "Passwords do not match!";
     } else {
-        // Check if email already exists
-        foreach ($_SESSION["users"] as $u) {
-            if ($u["email"] === $email) {
-                $error = "Email already registered!";
-                break;
-            }
-        }
-
-        // If no error, register user
-        if (!$error) {
-            $newUser = [
-                "id" => count($_SESSION["users"]) + 1,
-                "name" => $name,
-                "email" => $email,
-                "password" => $password // NOTE: plain text for demo
-            ];
-            $_SESSION["users"][] = $newUser;
-            $success = "Registration successful! <a href='login.php'>Login now</a>";
-        }
+        // Register the user
+        $success = register_user($name, $email, $password);
     }
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
 
-<body class="bg-light">
+<body class="bg-dark text-light">
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card shadow-lg p-4">
+                <div class="card shadow-lg p-4 bg-secondary">
                     <h3 class="text-center mb-3">Register</h3>
 
                     <?php if ($error) : ?>
@@ -87,9 +68,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <label>Confirm Password</label>
                             <input type="password" name="confirm" class="form-control" required>
                         </div>
-                        <button class="btn btn-success w-100">Register</button>
+                        <button class="btn btn-warning w-100">Register</button>
                     </form>
-                    <p class="mt-3 text-center">Already have an account? <a href="login.php">Login</a></p>
+                    <p class="mt-3 text-center">Already have an account? <a href="login.php" class="text-light">Login</a></p>
                 </div>
             </div>
         </div>
